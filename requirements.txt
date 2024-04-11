@@ -1,0 +1,5 @@
+argparse
+termcolor
+terminaltables
+bs4
+nyawc
