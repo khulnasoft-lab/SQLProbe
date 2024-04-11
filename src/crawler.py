@@ -1,56 +1,60 @@
 import re
-import logging
-from urlparse import urlparse
+from urllib.parse import urlparse
+
+#import std
 from nyawc.Options import Options
-from nyawc.Crawler import Crawler as NyawcCrawler
+from nyawc.QueueItem import QueueItem
+from nyawc.Crawler import Crawler as nyawcCrawler
 from nyawc.CrawlerActions import CrawlerActions
 from nyawc.http.Request import Request
+
 
 class Crawler:
     def __init__(self):
         self.links = []
         self.crawler = None
-        self.set_options()
+        self.setoptions()
 
     def crawl(self, url):
         if self.crawler is None:
-            logging.error("Crawler is not set up")
-            return []
+            print "Cralwer is not setted up"
+            return
 
-        parsed_url = urlparse(url)
-        domain = parsed_url.scheme + "://" + parsed_url.netloc
+        parsedurl = urlparse(url)
+        domain = parsedurl.scheme + "://" + parsedurl.netloc
 
         self.links = []
         self.crawler.start_with(Request(domain))
         return self.links
 
-    def set_options(self, depth=1):
-        """Set options for the crawler."""
+    def setoptions(self, depth=1):
+        """Define how far user want to crawl"""
+
         options = Options()
         options.scope.max_depth = depth
-        options.callbacks.crawler_before_start = self.crawler_start
-        options.callbacks.crawler_after_finish = self.crawler_finish
-        options.callbacks.request_before_start = self.request_start
-        options.callbacks.request_after_finish = self.request_finish
+        options.callbacks.crawler_before_start = self.crawlerstart
+        options.callbacks.crawler_after_finish = self.crawlerfinish
+        options.callbacks.request_before_start = self.requeststart
+        options.callbacks.request_after_finish = self.requestfinish
 
-        self.crawler = NyawcCrawler(options)
+        self.crawler = nyawcCrawler(options)
 
-    def crawler_start(self):
-        """Called before the crawler starts crawling."""
+    def crawlerstart(self):
+        # Called before the crawler starts crawling. Default is a null route.
         pass
 
-    def crawler_finish(self, queue):
-        """Called after the crawler finishes crawling."""
+    def crawlerfinish(self, queue):
+        # Called after the crawler finished crawling. Default is a null route.
         pass
 
-    def request_start(self, queue, queue_item):
-        """Called before the crawler starts a new request."""
+    def requeststart(self, queue, queue_item):
+        # Called before the crawler starts a new request. Default is a null route.
         return CrawlerActions.DO_CONTINUE_CRAWLING
 
-    def request_finish(self, queue, queue_item, new_queue_items):
-        """Called after the crawler finishes a request."""
+    def requestfinish(self, queue, queue_item, new_queue_items):
+        # Called after the crawler finishes a request. Default is a null route.
         url = queue_item.request.url
         if re.search('(.*?)(.php\?|.asp\?|.apsx\?|.jsp\?)(.*?)=(.*?)', url):
-            if url not in self.links:
+            if not url in self.links:
                 self.links.append(url)
         return CrawlerActions.DO_CONTINUE_CRAWLING

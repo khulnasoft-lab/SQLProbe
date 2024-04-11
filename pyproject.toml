@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sqlprobe"
+version = "2.0"
+description = "SQLProbe v2.0: Massive SQL injection vulnerability scanner"
+authors = ["Ghost <official.ghost@khulnasoft.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+termcolor = "^1.1.0"  # Add this line
+terminaltables = "^3.1.10"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+sqlprobe = "sqlprobe:main"

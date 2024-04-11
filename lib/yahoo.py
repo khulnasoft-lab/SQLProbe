@@ -1,40 +1,49 @@
+# Unofficial Simple Yahoo Scraper by Ghost
+# official.ghost@khulnasoft.com
+
 import urllib2
 import bs4
+
 
 DEFAULT_CONTENTYPE = "application/x-www-form-urlencoded; charset=UTF-8"
 DEFAULT_USERAGENT = "yahoo search"
 
+
 class Yahoo:
-    """Yahoo search engine scraper."""
+    """yahoo search engine scraper"""
 
     def __init__(self):
         self.yahoosearch = "https://search.yahoo.com/search;?p=%s&n=%s&b=%s"
         self.init_header()
 
     def init_header(self, contenttype=DEFAULT_CONTENTYPE, useragent=DEFAULT_USERAGENT):
-        """Initialize header."""
+        """initialize header"""
+
         self.contenttype = contenttype
         self.useragent = useragent
 
     def search(self, query, per_page=10, pages=1):
-        """Search for URLs from Yahoo search."""
+        """search urls from yahoo search"""
+
+        # store searched urls
         urls = []
 
         for page in range(pages):
-            try:
-                yahoosearch = self.yahoosearch % (query, per_page, (pages+1)*10)
-                request = urllib2.Request(yahoosearch)
-                request.add_header("Content-type", self.contenttype)
-                request.add_header("User-Agent", self.useragent)
-                result = urllib2.urlopen(request).read()
-                urls += self.parse_links(result)
-            except (urllib2.HTTPError, urllib2.URLError) as e:
-                print("Error occurred:", e)
+            yahoosearch = self.yahoosearch % (query, per_page, (pages+1)*10)
+
+            request = urllib2.Request(yahoosearch)
+            request.add_header("Content-type", self.contenttype)
+            request.add_header("User-Agent", self.useragent)
+
+            result = urllib2.urlopen(request).read()
+            urls += self.parse_links(result)
 
         return urls
 
     def parse_links(self, html):
-        """Scrape results (URLs) from HTML."""
+        """scrape results (url) from html"""
+
+        # init with empty list
         links = []
 
         soup = bs4.BeautifulSoup(html, "lxml")

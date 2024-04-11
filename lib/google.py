@@ -42,7 +42,7 @@ else:
     from cookielib import LWPCookieJar
     from urllib import quote_plus
     from urllib2 import Request, urlopen
-    from urlparse import urlparse, parse_qs
+    from urllib.parse import urlparse, parse_qs
 
 try:
     from bs4 import BeautifulSoup

@@ -1,48 +1,48 @@
+#import sys
 import urllib2
 from urlparse import urlparse
 
 import useragents
 
 
-def gethtml(url, last_url=False):
-    """Retrieve the HTML content of the given URL."""
+def gethtml(url, lastURL=False):
+    """return HTML of the given url"""
+
     if not (url.startswith("http://") or url.startswith("https://")):
         url = "http://" + url
 
-    headers = useragents.get()
-    request = urllib2.Request(url, headers=headers)
+    header = useragents.get()
+    request = urllib2.Request(url, None, header)
     html = None
 
     try:
         reply = urllib2.urlopen(request, timeout=10)
-        html = reply.read()
 
-    except urllib2.HTTPError as e:
-        if e.code == 500:
-            # HTTP 500 error, still read HTML content
+    except urllib2.HTTPError, e:
+        # read html content anyway for reply with HTTP500
+        if e.getcode() == 500:
             html = e.read()
-            # Log or handle the error as needed
+        #print >> sys.stderr, "[{}] HTTP error".format(e.code)
+        pass
 
-    except urllib2.URLError as e:
-        # Handle URL-related errors
-        # Log or handle the error as needed
-
-    except urllib2.socket.timeout:
-        # Handle timeout exceptions
-        # Log or handle the error as needed
+    except urllib2.URLError, e:
+        #print >> sys.stderr, "URL error, {}".format(e.reason)
+        pass
 
     except KeyboardInterrupt:
-        # Allow keyboard interrupts
         raise KeyboardInterrupt
 
-    except Exception as e:
-        # Handle other exceptions
-        # Log or handle the error as needed
+    except:
+        #print >> sys.stderr, "HTTP exception"
+        pass
+
+    else:
+        html = reply.read()
 
     if html:
-        if last_url:
-            return html, reply.url
+        if lastURL == True:
+            return (html, reply.url)
         else:
             return html
 
-    return None
+    return False

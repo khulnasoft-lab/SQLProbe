@@ -1,17 +1,20 @@
+# get server information of given domain
+
 import time
 import signal
 import multiprocessing
 import bs4
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import std
 from web import web
+
 
 def init():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def check(urls):
-    """Get server information for multiple domains using multiprocessing."""
+    """get many domains' server info with multi processing"""
 
     domains_info = []  # return in list for termtable input
     results = {}  # store results
@@ -23,7 +26,7 @@ def check(urls):
     for url in urls:
         def callback(result, url=url):
             results[url] = result
-        childs.append(pool.apply_async(__get_server_info, (url, ), callback=callback))
+        childs.append(pool.apply_async(__getserverinfo, (url, ), callback=callback))
 
     try:
         while True:
@@ -31,14 +34,15 @@ def check(urls):
             if all([child.ready() for child in childs]):
                 break
     except KeyboardInterrupt:
-        std.stderr("Skipping server info scanning process")
+        std.stderr("skipping server info scanning process")
         pool.terminate()
         pool.join()
     else:
         pool.close()
         pool.join()
 
-    # If the user skipped the process, some domains may not have information, so put "-" for empty data
+    # if user skipped the process, some may not have information
+    # so put - for empty data
     for url in urls:
         if url in results.keys():
             data = results.get(url)
@@ -49,17 +53,23 @@ def check(urls):
 
     return domains_info
 
-def __get_server_info(url):
-    """Get server name and version of a given domain."""
+
+def __getserverinfo(url):
+    """get server name and version of given domain"""
+
     url = urlparse(url).netloc if urlparse(url).netloc != '' else urlparse(url).path.split("/")[0]
+
     info = []  # to store server info
     url = "https://aruljohn.com/webserver/" + url
 
     try:
         result = web.gethtml(url)
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt
+
+    try:
         soup = bs4.BeautifulSoup(result, "lxml")
-    except (KeyboardInterrupt, Exception) as e:
-        std.stderr("Error getting server info for {}: {}".format(url, str(e)))
+    except:
         return ['', '']
 
     if soup.findAll('p', {"class" : "err"}):
@@ -70,9 +80,3 @@ def __get_server_info(url):
             info.append(row.findAll('td')[1].text.rstrip('\r'))
 
     return info
-
-if __name__ == "__main__":
-    # Example usage:
-    urls_to_check = ['example.com', 'example.net']
-    results = check(urls_to_check)
-    print(results)

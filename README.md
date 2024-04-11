@@ -25,6 +25,9 @@ SQLProbe
 > - [google](https://pypi.python.org/pypi/google)
 > - [nyawc](https://pypi.python.org/pypi/nyawc/)
 
+**Pre-installed Systems**  
+- [BlackArch Linux](https://blackarch.org/scanner.html) ![BlackArch](https://raw.githubusercontent.com/BlackArch/blackarch-artwork/master/logo/logo-38-49.png)
+
 ---
 ### Quick Tutorial  
 **1. Multiple domain scanning with SQLi dork**  
@@ -70,6 +73,13 @@ optional arguments:
   -t T        scan target website
   -r          reverse domain
 ```
+
+---
+### screenshots
+![1](https://raw.githubusercontent.com/khulnasoft-lab/sqlprobe/master/screenshots/1.png)
+![2](https://raw.githubusercontent.com/khulnasoft-lab/sqlprobe/master/screenshots/2.png)
+![3](https://raw.githubusercontent.com/khulnasoft-lab/sqlprobe/master/screenshots/3.png)
+![4](https://raw.githubusercontent.com/khulnasoft-lab/sqlprobe/master/screenshots/4.png)
 
 ---
 
